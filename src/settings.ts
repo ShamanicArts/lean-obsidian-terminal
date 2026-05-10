@@ -46,6 +46,7 @@ export interface TerminalPluginSettings {
   tabColorTintsBackground: boolean;
   tabColors: TabColorDef[];
   tabBarPosition: "top" | "left" | "right";
+  showTabBar: boolean;
   wikiLinkAutocomplete: boolean;
   wikiLinkInsertMode: WikiLinkInsertMode;
   /** Saved by closeTerminal(); restored by activateTerminal(). Cleared after restore. */
@@ -78,6 +79,7 @@ export const DEFAULT_SETTINGS: TerminalPluginSettings = {
   tabColorTintsBackground: true,
   tabColors: DEFAULT_TAB_COLORS.map((c) => ({ ...c })),
   tabBarPosition: "top",
+  showTabBar: true,
   wikiLinkAutocomplete: false,
   wikiLinkInsertMode: "wikilink",
 };
@@ -622,6 +624,17 @@ export class TerminalSettingTab extends PluginSettingTab {
   }
 
   private renderTabBarSection(containerEl: HTMLElement): void {
+    new Setting(containerEl)
+      .setName("Show tab bar")
+      .setDesc("Hide the tab bar if you use an external terminal multiplexer (tmux, Zellij, etc.). You can still navigate tabs via commands (Next/Prev terminal tab, etc.).")
+      .addToggle((toggle) =>
+        toggle.setValue(this.plugin.settings.showTabBar).onChange(async (value) => {
+          this.plugin.settings.showTabBar = value;
+          await this.plugin.saveSettings();
+          this.plugin.updateTabBarVisibility();
+        })
+      );
+
     new Setting(containerEl)
       .setName("Tab bar position")
       .setDesc("Position of the tab bar within the terminal panel.")

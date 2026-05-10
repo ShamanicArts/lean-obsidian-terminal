@@ -1056,7 +1056,22 @@ export class TerminalTabManager {
     }
   }
 
+  updateTabBarVisibility(): void {
+    if (this.settings.showTabBar) {
+      this.tabBarEl.removeAttribute("style");
+      this.renderTabBar();
+    } else {
+      this.tabBarEl.style.display = "none";
+    }
+  }
+
   private renderTabBar(): void {
+    if (!this.settings.showTabBar) {
+      this.tabBarEl.style.display = "none";
+      this.tabBarEl.empty();
+      return;
+    }
+    this.tabBarEl.removeAttribute("style");
     this.tabBarEl.empty();
 
     for (const session of this.sessions) {
